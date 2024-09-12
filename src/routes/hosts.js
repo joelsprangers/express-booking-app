@@ -10,7 +10,25 @@ const router = Router();
 
 router.get("/", async (req, res, next) => {
   try {
+    const filters = req.query;
     const hosts = await getHosts();
+
+    // Als er geen filters zijn, stuur dan alles terug
+    if (Object.keys(filters).length === 0) {
+      return res.json(hosts);
+    }
+
+    // Dynamische filtering
+    properties = properties.filter((property) => {
+      return Object.keys(filters).every((key) => {
+        if (Array.isArray(property[key])) {
+          return filters[key]
+            .split(",")
+            .every((filterValue) => property[key].includes(filterValue));
+        }
+        return property[key] == filters[key];
+      });
+    });
     res.json(hosts);
   } catch (error) {
     next(error);

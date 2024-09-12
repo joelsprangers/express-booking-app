@@ -10,7 +10,25 @@ const router = Router();
 
 router.get("/", async (req, res, next) => {
   try {
-    const bookings = await getBookings();
+    const filters = req.query;
+    let bookings = await getBookings();
+
+    // Als er geen filters zijn, stuur dan alles terug
+    if (Object.keys(filters).length === 0) {
+      return res.json(bookings);
+    }
+
+    // Dynamische filtering
+    properties = properties.filter((property) => {
+      return Object.keys(filters).every((key) => {
+        if (Array.isArray(property[key])) {
+          return filters[key]
+            .split(",")
+            .every((filterValue) => property[key].includes(filterValue));
+        }
+        return property[key] == filters[key];
+      });
+    });
     res.json(bookings);
   } catch (error) {
     next(error);
