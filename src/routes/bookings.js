@@ -19,14 +19,14 @@ router.get("/", async (req, res, next) => {
     }
 
     // Dynamische filtering
-    properties = properties.filter((property) => {
+    bookings = bookings.filter((booking) => {
       return Object.keys(filters).every((key) => {
-        if (Array.isArray(property[key])) {
+        if (Array.isArray(booking[key])) {
           return filters[key]
             .split(",")
-            .every((filterValue) => property[key].includes(filterValue));
+            .every((filterValue) => booking[key].includes(filterValue));
         }
-        return property[key] == filters[key];
+        return booking[key] == filters[key];
       });
     });
     res.json(bookings);

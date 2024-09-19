@@ -11,7 +11,7 @@ const router = Router();
 router.get("/", async (req, res, next) => {
   try {
     const filters = req.query;
-    const hosts = await getHosts();
+    let hosts = await getHosts();
 
     // Als er geen filters zijn, stuur dan alles terug
     if (Object.keys(filters).length === 0) {
@@ -19,14 +19,14 @@ router.get("/", async (req, res, next) => {
     }
 
     // Dynamische filtering
-    properties = properties.filter((property) => {
+    hosts = hosts.filter((host) => {
       return Object.keys(filters).every((key) => {
-        if (Array.isArray(property[key])) {
+        if (Array.isArray(host[key])) {
           return filters[key]
             .split(",")
-            .every((filterValue) => property[key].includes(filterValue));
+            .every((filterValue) => host[key].includes(filterValue));
         }
-        return property[key] == filters[key];
+        return host[key] == filters[key];
       });
     });
     res.json(hosts);
